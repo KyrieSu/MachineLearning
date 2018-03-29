@@ -52,7 +52,7 @@ def PocketPLA(X,Y,max_iter):
                 least_error_weight = tmp_weight
         right = total_sample - least_error
         print("iter {} : {}/{} = {}".format(i,right,total_sample,right/total_sample))
-        print("Weight : {}",least_error_weight)
+        print("Weight : {}".format(least_error_weight))
         if least_error==0:
             break
     print(least_error)
