@@ -42,7 +42,7 @@ def PocketPLA(X,Y,max_iter):
         index = random.randint(0,total_sample-1)
         x , y = X[index] , Y[index]
         pred = np.sign(np.dot(weight,x))
-        label = label = np.sign(y)
+        label = np.sign(y)
         if pred!=label:
             tmp_weight = least_error_weight + (x*y)
             tmp_error = _cal_error_data(tmp_weight)
@@ -63,10 +63,10 @@ def PocketPLA(X,Y,max_iter):
 
 if __name__ == "__main__":
     # This is "linear separable" dataset
-    datas = np.genfromtxt('train18.txt',dtype='float')
+    datas = np.genfromtxt('test18.txt',dtype='float')
     X = datas[:,:-1]
     Y = datas[:,-1].astype(int)
     row , col = X.shape
-    # NaivePLA(X,Y)
-    PocketPLA(X,Y,1000)
+    NaivePLA(X,Y)
+    # PocketPLA(X,Y,1000)
 
