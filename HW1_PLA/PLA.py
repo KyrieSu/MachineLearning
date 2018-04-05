@@ -15,27 +15,16 @@ def NaivePLA(X,Y):
                 error_data+=1
                 weight+=(y*x)
         right = total_sample-error_data
-        print("iter {} : {}/{} = {}".format(iteration,right,total_sample,right/total_sample))
+        # print("iter {} : {}/{} = {}".format(iteration,right,total_sample,right/total_sample))
         iteration+=1
         if error_data==0:
             break
-    print(weight)
+    return weight
 
 def PocketPLA(X,Y,max_iter):
     total_sample , dim = X.shape
     weight = np.random.random_sample(dim)
-    datas = zip(X,Y)
-    ##########
-    def _cal_error_data(w):
-        result = 0
-        for x , y in datas:
-            pred = np.sign(np.dot(weight,x))
-            label = np.sign(y)
-            if pred!=label:
-                result+=1
-        return result
-    ##########
-    least_error = _cal_error_data(weight)
+    _ , least_error = evaluate(X,Y,weight)
     least_error_weight = weight
 
     for i in range(max_iter):
@@ -43,30 +32,56 @@ def PocketPLA(X,Y,max_iter):
         x , y = X[index] , Y[index]
         pred = np.sign(np.dot(weight,x))
         label = np.sign(y)
+
         if pred!=label:
             tmp_weight = least_error_weight + (x*y)
-            tmp_error = _cal_error_data(tmp_weight)
+            _ , tmp_error = evaluate(X,Y,tmp_weight)
 
             if tmp_error <= least_error:
                 least_error = tmp_error
                 least_error_weight = tmp_weight
-        right = total_sample - least_error
-        print("iter {} : {}/{} = {}".format(i,right,total_sample,right/total_sample))
-        print("Weight : {}".format(least_error_weight))
+
         if least_error==0:
             break
-    print(least_error)
-    print(least_error_weight)
-    # return least_error_weight,least_error
+    # print("Train dataset Acc : {} ".format((total_sample-least_error)/total_sample))
+    # print(least_error_weight)
+    return least_error_weight
+
+def evaluate(testX,testY,weight):
+    right , wrong = 0 , 0
+    test_set = zip(testX,testY)
+    for x , y in test_set:
+        pred = np.sign(np.dot(weight,x))
+        label = np.sign(y)
+        if pred == label:
+            right +=1
+        else:
+            wrong +=1
+    total = right + wrong 
+    # print("Accuracy : {} / {} = {}".format(right,total,right/total))
+    # print(weight)
+    return right , wrong
+
 
         
 
 if __name__ == "__main__":
     # This is "linear separable" dataset
+    datas = np.genfromtxt('train18.txt',dtype='float')
+    X = datas[:,:-1]
+    X = np.pad(X,((0,0),(1,0)),mode='constant', constant_values=1) # padding bias
+    Y = datas[:,-1].astype(int)
+    # NaivePLA(X,Y)
+    weight = PocketPLA(X,Y,500)
+    right , wrong = evaluate(X,Y,weight)
+    print("Train dataset Acc : {}".format(right/(right+wrong)))
+    '''
+    Load Test dataset
+    '''
     datas = np.genfromtxt('test18.txt',dtype='float')
     X = datas[:,:-1]
+    X = np.pad(X,((0,0),(1,0)),mode='constant', constant_values=1) # padding bias
     Y = datas[:,-1].astype(int)
-    row , col = X.shape
-    NaivePLA(X,Y)
-    # PocketPLA(X,Y,1000)
+    right , wrong = evaluate(X,Y,weight)
+    print("Test dataset Acc : {}".format(right/(right+wrong)))
 
