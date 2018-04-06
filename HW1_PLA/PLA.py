@@ -66,10 +66,11 @@ def evaluate(testX,testY,weight):
 #     # all dataset is download by ML of Hsuan-Tien Lin
 #     datas = np.genfromtxt('train18.txt',dtype='float')
 #     X = datas[:,:-1]
-#     X = np.pad(X,((0,0),(1,0)),mode='constant', constant_values=1) # padding bias
+#     one = np.ones((X.shape[0],1))
+#     X = np.concatenate((one,X),axis=-1)
 #     Y = datas[:,-1].astype(int)
-#     weight = NaivePLA(X,Y)
-#     # weight = PocketPLA(X,Y,500)
+#     # weight = NaivePLA(X,Y)
+#     weight = PocketPLA(X,Y,1000)
 #     right , wrong = evaluate(X,Y,weight)
 #     print("Train dataset Acc : {}".format(right/(right+wrong)))
 #     '''
@@ -77,7 +78,7 @@ def evaluate(testX,testY,weight):
 #     '''
 #     datas = np.genfromtxt('test18.txt',dtype='float')
 #     X = datas[:,:-1]
-#     X = np.pad(X,((0,0),(1,0)),mode='constant', constant_values=1) # padding bias
+#     X = np.concatenate((one,X),axis=-1)
 #     Y = datas[:,-1].astype(int)
 #     right , wrong = evaluate(X,Y,weight)
 #     print("Test dataset Acc : {}".format(right/(right+wrong)))
