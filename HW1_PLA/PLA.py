@@ -3,7 +3,7 @@ import random
 
 def NaivePLA(X,Y):
     total_sample , dim = X.shape
-    weight = np.random.random_sample(dim)
+    weight = np.zeros(dim)
 
     while True:
         error_data = 0
@@ -22,7 +22,7 @@ def NaivePLA(X,Y):
 
 def PocketPLA(X,Y,max_iter):
     total_sample , dim = X.shape
-    weight = np.random.random_sample(dim)
+    weight = np.zeros(dim)
     _ , least_error = evaluate(X,Y,weight)
     least_error_weight = weight
 
@@ -42,7 +42,9 @@ def PocketPLA(X,Y,max_iter):
 
         if least_error==0: # useless 
             break
-
+    right = total_sample-least_error
+    print("Accuracy : {} / {} = {}".format(right,total_sample,right/total_sample))
+    
     return least_error_weight
 
 def evaluate(testX,testY,weight):
@@ -55,10 +57,10 @@ def evaluate(testX,testY,weight):
             right +=1
         else:
             wrong +=1
-    total = right + wrong 
-
-    return right , wrong
-
+    total_sample = right + wrong 
+    # print("Accuracy : {} / {} = {}".format(right,total_sample,right/total_sample))
+    
+    return right,wrong
 
         
 
