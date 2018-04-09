@@ -3,7 +3,7 @@ import random
 
 def NaivePLA(X,Y):
     total_sample , dim = X.shape
-    weight = np.zeros(dim)
+    weight = np.random.rand(dim)
 
     while True:
         error_data = 0
@@ -22,19 +22,21 @@ def NaivePLA(X,Y):
 
 def PocketPLA(X,Y,max_iter):
     total_sample , dim = X.shape
-    weight = np.zeros(dim)
+    weight = np.random.rand(dim)
     _ , least_error = evaluate(X,Y,weight)
     least_error_weight = weight
 
     for i in range(max_iter):
         index = random.randint(0,total_sample-1)
         x , y = X[index] , Y[index]
+
         pred = np.sign(np.dot(weight,x))
         label = np.sign(y)
-
         if pred!=label:
-            tmp_weight = least_error_weight + (x*y)
+            tmp_weight = weight + (x*y)
             _ , tmp_error = evaluate(X,Y,tmp_weight)
+
+            weight = tmp_weight
 
             if tmp_error <= least_error:
                 least_error = tmp_error
@@ -47,12 +49,24 @@ def PocketPLA(X,Y,max_iter):
     
     return least_error_weight
 
+def predict(testX,weight):
+    '''
+    predict the label of testX 
+    return : the list of predict array
+    '''
+    preds = []
+    for x in testX:
+        tmp = np.sign(np.dot(weight,x))
+        preds.append(tmp)
+    assert(len(preds)==testX.shape[0])
+
+    return np.asarray(preds).astype(int)
+
 def evaluate(testX,testY,weight):
     right , wrong = 0 , 0
-
-    for x , y in zip(testX,testY):
-        pred = np.sign(np.dot(weight,x))
-        label = np.sign(y)
+    preds = predict(testX,weight)
+    for pred , label in zip(preds,testY):
+        label = np.sign(label)
         if pred == label:
             right +=1
         else:
@@ -68,19 +82,14 @@ def evaluate(testX,testY,weight):
 #     # all dataset is download by ML of Hsuan-Tien Lin
 #     datas = np.genfromtxt('train18.txt',dtype='float')
 #     X = datas[:,:-1]
-#     one = np.ones((X.shape[0],1))
-#     X = np.concatenate((one,X),axis=-1)
 #     Y = datas[:,-1].astype(int)
 #     # weight = NaivePLA(X,Y)
 #     weight = PocketPLA(X,Y,1000)
-#     right , wrong = evaluate(X,Y,weight)
-#     print("Train dataset Acc : {}".format(right/(right+wrong)))
 #     '''
 #     Load Test dataset
 #     '''
 #     datas = np.genfromtxt('test18.txt',dtype='float')
 #     X = datas[:,:-1]
-#     X = np.concatenate((one,X),axis=-1)
 #     Y = datas[:,-1].astype(int)
 #     right , wrong = evaluate(X,Y,weight)
 #     print("Test dataset Acc : {}".format(right/(right+wrong)))
